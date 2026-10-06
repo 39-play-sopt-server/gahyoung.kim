@@ -5,13 +5,13 @@ import java.util.List;
 public class PostService {
 	private PostRepository repository = new PostRepository();
 
-	public void createPost(String title, String content) {
+	public void createPost(String category, String title, String content) {
 
-		if (title.isBlank() || content.isBlank()) {
-			throw new IllegalArgumentException("제목과 내용은 비어 있을 수 없습니다.");
+		if (category.isBlank() || title.isBlank() || content.isBlank()) {
+			throw new IllegalArgumentException("카테고리와 제목과 내용은 비어 있을 수 없습니다.");
 		}
 
-		Post post = new Post(title, content);
+		Post post = new Post(category, title, content);
 		repository.save(post);
 	}
 

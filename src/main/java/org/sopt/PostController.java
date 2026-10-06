@@ -48,11 +48,12 @@ public class PostController {
 	}
 
 		private void createPost() {
+			String category = view.inputCategory();
 			String title = view.inputTitle();
 			String content = view.inputContent();
 
 			try {
-				service.createPost(title, content);
+				service.createPost(category,title, content);
 				view.showMessage("게시글이 작성되었습니다.");
 
 			} catch (IllegalArgumentException e) {

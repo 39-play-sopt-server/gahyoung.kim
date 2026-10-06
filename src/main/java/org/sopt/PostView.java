@@ -19,7 +19,10 @@ public class PostView {
 
 		return Integer.parseInt(scanner.nextLine());
 	}
-
+	public String inputCategory() {
+		System.out.print("카테고리: ");
+		return scanner.nextLine();
+	}
 	public String inputTitle() {
 		System.out.print("제목: ");
 		return scanner.nextLine();
@@ -29,6 +32,7 @@ public class PostView {
 		System.out.print("내용: ");
 		return scanner.nextLine();
 	}
+
 
 	public String inputNewTitle() {
 		System.out.print("새로운 제목: ");
@@ -57,13 +61,14 @@ public class PostView {
 			Post currentPost = posts.get(i);
 
 			System.out.println(
-					(i + 1) + ". " + currentPost.getTitle()
+					(i + 1) + ".  [" + currentPost.getCategory() + "]" + currentPost.getTitle()
 			);
 		}
 	}
 
 	public void showPost(Post post) {
 		System.out.println("\n=== 게시글 ===");
+		System.out.println("카테고리: " + post.getCategory());
 		System.out.println("제목: " + post.getTitle());
 		System.out.println("내용: " + post.getContent());
 	}
@@ -78,5 +83,6 @@ public class PostView {
 	public void showMessage(String message) {
 		System.out.println(message);
 	}
+
 
 }
