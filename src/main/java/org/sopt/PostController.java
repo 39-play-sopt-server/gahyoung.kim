@@ -85,14 +85,13 @@ public class PostController {
 
 			int index = view.inputNumber("조회할 게시글 번호:");
 
-			if (index < 0 || index >= posts.size()) {
-				view.showMessage("존재하지 않는 게시글입니다.");
-				return;
+			try {
+				Post post = service.getPost(index);
+				view.showPost(post);
+			} catch (IllegalArgumentException e) {
+				view.showMessage(e.getMessage());
 			}
 
-			Post post = service.getPost(index);
-
-			view.showPost(post);
 		}
 
 
@@ -107,11 +106,6 @@ public class PostController {
 			}
 			int index = view.inputNumber("수정할 게시글 번호:");
 
-			if (index < 0 || index >= posts.size()) {
-				view.showMessage("존재하지 않는 게시글입니다.");
-
-				return;
-			}
 
 			String newTitle = view.inputNewTitle();
 			String newContent = view.inputNewContent();
@@ -127,6 +121,7 @@ public class PostController {
 
 
 		private void deletePost() {
+
 			List<Post> posts = service.getAllPosts();
 
 			if (posts.isEmpty()) {
@@ -136,16 +131,13 @@ public class PostController {
 
 			int index = view.inputNumber("삭제할 게시글 번호: ");
 
-			if (index < 0 || index >= posts.size()) {
-				view.showMessage("존재하지 않는 게시글입니다.");
-				return;
+			try {
+				service.deletePost(index);
+				view.showMessage("게시글이 삭제되었습니다.");
+			} catch (IllegalArgumentException e) {
+				view.showMessage(e.getMessage());
 			}
-
-			service.deletePost(index);
-
-			view.showMessage("게시글이 삭제되었습니다.");
 		}
-
 	}
 
 
