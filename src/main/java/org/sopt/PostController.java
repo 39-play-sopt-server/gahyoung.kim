@@ -1,10 +1,10 @@
 package org.sopt;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class PostController {
-	private final List<Post> posts = new ArrayList<>();
+	private final PostService service = new PostService();
 	private final PostView view = new PostView();
 
 
@@ -51,15 +51,23 @@ public class PostController {
 			String title = view.inputTitle();
 			String content = view.inputContent();
 
-			Post post = new Post(title,content);
-			posts.add(post);
+			try {
+				service.createPost(title, content);
+				view.showMessage("게시글이 작성되었습니다.");
 
-			view.showMessage("게시글이 작성되었습니다.");
+			} catch (IllegalArgumentException e) {
+				// view.showMessage("게시글이 작성되지 않았습니다."); // 자세한 설명 부족 및 우리가 e에 넣어놓은거 찾을 수 없음
+				view.showMessage(e.getMessage());
+			}
 		}
 
+
 		private void showPostList() {
+
+			List<Post> posts = service.getAllPosts();
+
 			if (posts.isEmpty()) {
-				System.out.println("게시글이 없습니다.");
+				view.showMessage("게시글이 없습니다.");
 				return;
 			}
 
@@ -67,6 +75,9 @@ public class PostController {
 		}
 
 		private void showPost() {
+
+			List<Post> posts = service.getAllPosts();
+
 			if (posts.isEmpty()) {
 				view.showMessage("게시글이 없습니다.");
 				return;
@@ -79,15 +90,19 @@ public class PostController {
 				return;
 			}
 
-			Post post = posts.get(index);
+			Post post = service.getPost(index);
 
 			view.showPost(post);
 		}
 
 
 		private void updatePost() {
+
+			List<Post> posts = service.getAllPosts();
+
+
 			if (posts.isEmpty()) {
-				System.out.println("게시글이 없습니다.");
+				view.showMessage("게시글이 없습니다.");
 				return;
 			}
 			int index = view.inputNumber("수정할 게시글 번호:");
@@ -97,19 +112,23 @@ public class PostController {
 
 				return;
 			}
-			Post post = posts.get(index);
 
 			String newTitle = view.inputNewTitle();
 			String newContent = view.inputNewContent();
 
-			post.update(newTitle,newContent);
 
-			view.showMessage("게시글이 수정되었습니다.");
-
+			try {
+				service.updatePost(index, newTitle, newContent);
+				view.showMessage("게시글이 수정되었습니다.");
+			} catch (IllegalArgumentException e) {
+				view.showMessage(e.getMessage());
+			}
 		}
 
 
 		private void deletePost() {
+			List<Post> posts = service.getAllPosts();
+
 			if (posts.isEmpty()) {
 				view.showMessage("게시글이 없습니다.");
 				return;
@@ -122,7 +141,7 @@ public class PostController {
 				return;
 			}
 
-			posts.remove(index);
+			service.deletePost(index);
 
 			view.showMessage("게시글이 삭제되었습니다.");
 		}
