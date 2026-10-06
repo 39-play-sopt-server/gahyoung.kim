@@ -1,29 +1,34 @@
 package org.sopt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PostRepository {
-	private final List<Post> posts = new ArrayList<>();
 
-	// 저장
+	private final Map<Long, Post> posts = new HashMap<>();
+	private Long sequence = 1L; // 게시글 ID 자동 생성을 위한 값
+
 	public void save(Post post) {
-		posts.add(post);
+		post.assignId(sequence);
+		posts.put(sequence, post);
+		sequence++;
 	}
 
-	// 전체 조회
 	public List<Post> findAll() {
-		return posts;
+		return new ArrayList<>(posts.values());
 	}
 
-	// 하나 조회
-	// get(index) = 번호를 알고 있을 때 → 객체를 가져오기
-	// indexOf(object) = 객체를 알고 있을 때 → 그 객체의 번호를 찾기
-	public Post findIndex(int index) {
-		return posts.get(index);
+	public Post findById(Long id) {
+		return posts.get(id);
 	}
 
-	public void deleteIndex(int index) {
-		posts.remove(index);
+	public boolean existsById(Long id) {
+		return posts.containsKey(id);
+	}
+
+	public void deleteById(Long id) {
+		posts.remove(id);
 	}
 }

@@ -33,6 +33,11 @@ public class PostView {
 		return scanner.nextLine();
 	}
 
+	public Long inputId(String message) {
+		System.out.print(message);
+		return Long.parseLong(scanner.nextLine());
+	}
+
 
 	public String inputNewTitle() {
 		System.out.print("새로운 제목: ");
@@ -57,17 +62,16 @@ public class PostView {
 	public void showList(List<Post> posts) {
 		System.out.println("\n=== 게시글 목록 ===");
 
-		for (int i = 0; i < posts.size(); i++) {
-			Post currentPost = posts.get(i);
-
+		for (Post post : posts) {
 			System.out.println(
-					(i + 1) + ".  [" + currentPost.getCategory() + "]" + currentPost.getTitle()
+					post.getId() + ".  [" + post.getCategory() + "]" + post.getTitle()
 			);
 		}
 	}
 
 	public void showPost(Post post) {
 		System.out.println("\n=== 게시글 ===");
+		System.out.println("번호: " + post.getId());
 		System.out.println("카테고리: " + post.getCategory());
 		System.out.println("제목: " + post.getTitle());
 		System.out.println("내용: " + post.getContent());

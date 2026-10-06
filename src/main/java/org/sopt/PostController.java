@@ -56,7 +56,7 @@ public class PostController {
 				service.createPost(category,title, content);
 				view.showMessage("게시글이 작성되었습니다.");
 
-			} catch (IllegalArgumentException e) {
+			} catch (PostException e) {
 				// view.showMessage("게시글이 작성되지 않았습니다."); // 자세한 설명 부족 및 우리가 e에 넣어놓은거 찾을 수 없음
 				view.showMessage(e.getMessage());
 			}
@@ -77,45 +77,29 @@ public class PostController {
 
 		private void showPost() {
 
-			List<Post> posts = service.getAllPosts();
-
-			if (posts.isEmpty()) {
-				view.showMessage("게시글이 없습니다.");
-				return;
-			}
-
-			int index = view.inputNumber("조회할 게시글 번호:");
+			Long id = view.inputId("조회할 게시글 번호: ");
 
 			try {
-				Post post = service.getPost(index);
+				Post post = service.getPost(id);
 				view.showPost(post);
-			} catch (IllegalArgumentException e) {
+			} catch (PostException e) {
 				view.showMessage(e.getMessage());
 			}
-
 		}
 
 
 		private void updatePost() {
 
-			List<Post> posts = service.getAllPosts();
-
-
-			if (posts.isEmpty()) {
-				view.showMessage("게시글이 없습니다.");
-				return;
-			}
-			int index = view.inputNumber("수정할 게시글 번호:");
-
+			Long id = view.inputId("수정할 게시글 번호: ");
 
 			String newTitle = view.inputNewTitle();
 			String newContent = view.inputNewContent();
 
 
 			try {
-				service.updatePost(index, newTitle, newContent);
+				service.updatePost(id, newTitle, newContent);
 				view.showMessage("게시글이 수정되었습니다.");
-			} catch (IllegalArgumentException e) {
+			} catch (PostException e) {
 				view.showMessage(e.getMessage());
 			}
 		}
@@ -123,19 +107,12 @@ public class PostController {
 
 		private void deletePost() {
 
-			List<Post> posts = service.getAllPosts();
-
-			if (posts.isEmpty()) {
-				view.showMessage("게시글이 없습니다.");
-				return;
-			}
-
-			int index = view.inputNumber("삭제할 게시글 번호: ");
+			Long id = view.inputId("삭제할 게시글 번호: ");
 
 			try {
-				service.deletePost(index);
+				service.deletePost(id);
 				view.showMessage("게시글이 삭제되었습니다.");
-			} catch (IllegalArgumentException e) {
+			} catch (PostException e) {
 				view.showMessage(e.getMessage());
 			}
 		}

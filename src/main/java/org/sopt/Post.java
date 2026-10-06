@@ -1,6 +1,7 @@
 package org.sopt;
 
 public class Post {
+	private Long id;
 	private String category;
 	private String title;
 	private String content;
@@ -28,4 +29,11 @@ public class Post {
 		return category;
 	}
 
+	public void assignId(Long id) {
+		this.id = id;
+	}
+
+	public Long getId() {
+		return id;
+	}
 }
