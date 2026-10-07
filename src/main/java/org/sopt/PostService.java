@@ -11,7 +11,15 @@ public class PostService {
 			throw new PostException("카테고리와 제목과 내용은 비어 있을 수 없습니다.");
 		}
 
-		Post post = new Post(category, title, content);
+		Category postCategory;
+
+		try {
+			postCategory = Category.valueOf(category.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new PostException("존재하지 않는 카테고리입니다.");
+		}
+
+		Post post = new Post(postCategory, title, content);
 		repository.save(post);
 	}
 

@@ -2,11 +2,11 @@ package org.sopt;
 
 public class Post {
 	private Long id;
-	private String category;
+	private Category category;
 	private String title;
 	private String content;
 
-	public Post(String category,String title, String content) {
+	public Post(Category category,String title, String content) {
 		this.category = category;
 		this.title = title;
 		this.content = content;
@@ -25,7 +25,7 @@ public class Post {
 		this.content = content;
 	}
 
-	public String getCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
