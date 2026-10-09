@@ -1,4 +1,6 @@
-package org.sopt;
+package org.sopt.view;
+
+import org.sopt.domain.Post;
 
 import java.util.List;
 import java.util.Scanner;

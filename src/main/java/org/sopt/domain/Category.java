@@ -1,4 +1,4 @@
-package org.sopt;
+package org.sopt.domain;
 
 public enum Category {
 	NOTICE,

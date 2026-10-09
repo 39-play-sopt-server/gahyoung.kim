@@ -1,4 +1,9 @@
-package org.sopt;
+package org.sopt.service;
+
+import org.sopt.exception.PostException;
+import org.sopt.repository.PostRepository;
+import org.sopt.domain.Category;
+import org.sopt.domain.Post;
 
 import java.util.List;
 

@@ -1,5 +1,10 @@
-package org.sopt;
+package org.sopt.controller;
 
+
+import org.sopt.domain.Post;
+import org.sopt.exception.PostException;
+import org.sopt.service.PostService;
+import org.sopt.view.PostView;
 
 import java.util.List;
 

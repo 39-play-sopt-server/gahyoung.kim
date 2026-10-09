@@ -1,4 +1,6 @@
-package org.sopt;
+package org.sopt.repository;
+
+import org.sopt.domain.Post;
 
 import java.util.ArrayList;
 import java.util.HashMap;

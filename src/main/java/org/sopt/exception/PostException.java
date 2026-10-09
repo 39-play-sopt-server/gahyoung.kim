@@ -1,4 +1,4 @@
-package org.sopt;
+package org.sopt.exception;
 
 public class PostException extends RuntimeException {
 
