@@ -2,11 +2,11 @@ package org.sopt.domain;
 
 public class Post {
 	private Long id;
-	private Category category;
+	private PostCategory category;
 	private String title;
 	private String content;
 
-	public Post(Category category,String title, String content) {
+	public Post(PostCategory category, String title, String content) {
 		this.category = category;
 		this.title = title;
 		this.content = content;
@@ -25,7 +25,7 @@ public class Post {
 		this.content = content;
 	}
 
-	public Category getCategory() {
+	public PostCategory getCategory() {
 		return category;
 	}
 
