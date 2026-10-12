@@ -1,11 +1,12 @@
 package org.sopt;
 
-import org.sopt.controller.PostController;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class Main {
-	public static void main(String[] args) {
 
-		PostController controller = new PostController();
-		controller.run();
+	public static void main(String[] args) {
+		SpringApplication.run(Main.class, args);
 	}
 }

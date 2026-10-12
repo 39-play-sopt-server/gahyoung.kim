@@ -1,12 +1,14 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public class PostRepository {
 
 	private final Map<Long, Post> posts = new HashMap<>();

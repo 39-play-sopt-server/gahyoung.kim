@@ -2,7 +2,15 @@ package org.sopt.exception;
 
 public class PostException extends RuntimeException {
 
-	public PostException(String message) {
-		super(message);
+	private final ErrorType errorType;
+
+	// 생성자
+	public PostException(ErrorType errorType) {
+		super(errorType.getMessage());
+		this.errorType = errorType;
+	}
+	// getter
+	public ErrorType getErrorType(){
+		return errorType;
 	}
 }

@@ -1,6 +1,6 @@
 package org.sopt.domain;
 
-public enum Category {
+public enum PostCategory {
 	NOTICE,
 	FREE,
 	QUESTION
