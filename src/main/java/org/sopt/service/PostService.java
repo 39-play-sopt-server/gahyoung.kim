@@ -47,12 +47,12 @@ public class PostService {
 		repository.save(post);
 	}
 
-	public List<Post> getAllPosts(int page, int size) {
+	public List<Post> getAllPosts(int page, int size, PostCategory category) {
 		if (page < 1 || size < 1) {
 			throw new PostException(ErrorType.INVALID_REQUEST);
 		}
 
-		return repository.findPage(page, size);
+		return repository.findPage(page, size, category );
 	}
 
 	public Post getPost(Long id) {

@@ -1,6 +1,7 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.sopt.domain.PostCategory;
 import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
@@ -25,10 +26,12 @@ public class PostRepository {
 				.sorted(Comparator.comparing(Post::getId).reversed())
 				.toList();
 	}
-	public List<Post> findPage(int page, int size) {
+	// 페이지네이션
+	public List<Post> findPage(int page, int size, PostCategory category) {
 		long offset = (page - 1L) * size;
 
 		return findAll().stream()
+				.filter(post -> category == null || post.getCategory() == category)
 				.skip(offset)
 				.limit(size)
 				.toList();

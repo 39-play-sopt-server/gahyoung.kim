@@ -2,6 +2,7 @@ package org.sopt.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.sopt.domain.Post;
+import org.sopt.domain.PostCategory;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -56,10 +57,11 @@ public class PostController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<Post>>> showPostList(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size
+			@RequestParam(name = "size", defaultValue = "10") int size,
+			@RequestParam(name = "category", required = false ) PostCategory category
 	) {
 		return ApiResponse.success(
-				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",service.getAllPosts(page,size)
+				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",service.getAllPosts(page,size,category)
 		);
 	}
 
