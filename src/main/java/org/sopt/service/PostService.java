@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import jakarta.servlet.http.HttpSession;
 import org.sopt.domain.PostCategory;
 import org.sopt.domain.Post;
 import org.sopt.exception.PostException;
@@ -19,7 +20,7 @@ public class PostService {
 	}
 
 	// 무한 새로고침 방지를 위한 10분 내에 조회수 연속으로 못올리게 방지
-	// private static final long VIEW_INTERVAL = 10 * 60 * 1000L;
+	private static final long VIEW_INTERVAL = 10 * 60 * 1000L;
 
 	public void createPost(String category, String title, String content) {
 
@@ -55,12 +56,19 @@ public class PostService {
 		return repository.findPage(page, size, category );
 	}
 
-	public Post getPost(Long id) {
+	public Post getPost(Long id, HttpSession session) {
 		synchronized (repository) {
 			validatePostId(id);
-
 			Post post = repository.findById(id);
-			post.increaseViewCount();
+
+			String view = "viewedAt:" + id;
+			Long lastViewedAt = (Long) session.getAttribute(view);
+			long now = System.currentTimeMillis();
+
+			if (lastViewedAt == null || now - lastViewedAt >= VIEW_INTERVAL) {
+				post.increaseViewCount();
+				session.setAttribute(view, now);
+			}
 
 			return post.copy();
 		}

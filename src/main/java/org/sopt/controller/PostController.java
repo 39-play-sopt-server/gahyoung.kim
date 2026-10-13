@@ -1,6 +1,7 @@
 package org.sopt.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpSession;
 import org.sopt.domain.Post;
 import org.sopt.domain.PostCategory;
 import org.sopt.global.response.ApiResponse;
@@ -71,9 +72,9 @@ public class PostController {
 			description = "게시글을 조회하고 조회수를 1 증가시킵니다."
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<Post>> showPost(@PathVariable Long id) {
+	public ResponseEntity<ApiResponse<Post>> showPost(@PathVariable Long id, HttpSession session) {
 		return ApiResponse.success(
-				HttpStatus.OK, "게시글 조회에 성공했습니다.", service.getPost(id)
+				HttpStatus.OK, "게시글 조회에 성공했습니다.", service.getPost(id, session)
 		);
 	}
 
