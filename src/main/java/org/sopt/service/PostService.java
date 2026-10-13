@@ -18,6 +18,9 @@ public class PostService {
 		this.repository = repository;
 	}
 
+	// 무한 새로고침 방지를 위한 10분 내에 조회수 연속으로 못올리게 방지
+	// private static final long VIEW_INTERVAL = 10 * 60 * 1000L;
+
 	public void createPost(String category, String title, String content) {
 
 	 // if (category.isBlank() || category == null )
@@ -50,7 +53,11 @@ public class PostService {
 
 	public Post getPost(Long id) {
 		validatePostId(id);
-		return repository.findById(id);
+
+		Post post = repository.findById(id);
+		post.increaseViewCount();
+
+		return post;
 	}
 
 
@@ -80,4 +87,5 @@ public class PostService {
 			throw new PostException(ErrorType.POST_NOT_FOUND);
 		}
 	}
+
 }
