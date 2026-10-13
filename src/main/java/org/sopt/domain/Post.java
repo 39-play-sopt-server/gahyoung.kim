@@ -7,8 +7,8 @@ public class Post {
 	private PostCategory category;
 	private String title;
 	private String content;
+
 	// AtomicLong은 동시성을  잡아주는 정수타입
-	// private final AtomicLong viewCount = new AtomicLong(0L);
 	private final AtomicLong viewCount = new AtomicLong(0L);
 
 	public Post(PostCategory category, String title, String content) {
@@ -50,5 +50,13 @@ public class Post {
 	
 	public void increaseViewCount() {
 		viewCount.incrementAndGet();
+	}
+
+	// 동시성 제어를 위한 복사
+	public Post copy() {
+		Post copiedPost = new Post(category, title, content);
+		copiedPost.id = id;
+		copiedPost.viewCount.set(viewCount.get());
+		return copiedPost;
 	}
 }

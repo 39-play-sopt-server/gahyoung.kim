@@ -56,34 +56,41 @@ public class PostService {
 	}
 
 	public Post getPost(Long id) {
-		validatePostId(id);
+		synchronized (repository) {
+			validatePostId(id);
 
-		Post post = repository.findById(id);
-		post.increaseViewCount();
+			Post post = repository.findById(id);
+			post.increaseViewCount();
 
-		return post;
+			return post.copy();
+		}
 	}
 
 
 	public void updatePost(Long id, String newTitle, String newContent) {
-		validatePostId(id);
+		synchronized (repository) {
+			validatePostId(id);
 
-		if (newTitle == null || newTitle.isBlank()) {
-			throw new PostException(ErrorType.INVALID_TITLE);
-		}
 
-		if (newContent == null || newContent.isBlank()) {
+			if (newTitle == null || newTitle.isBlank()) {
+				throw new PostException(ErrorType.INVALID_TITLE);
+			}
+
+			if (newContent == null || newContent.isBlank()) {
 				throw new PostException(ErrorType.INVALID_CONTENT);
-		}
+			}
 
 			Post post = repository.findById(id);
 			post.update(newTitle, newContent);
 		}
+	}
 
 
 	public void deletePost(Long id) {
-		validatePostId(id);
-		repository.deleteById(id);
+		synchronized (repository) {
+			validatePostId(id);
+			repository.deleteById(id);
+		}
 	}
 
 	private void validatePostId(Long id) {
