@@ -3,7 +3,7 @@ package org.sopt.repository;
 import org.sopt.domain.Post;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,17 @@ public class PostRepository {
 	}
 
 	public List<Post> findAll() {
-		return new ArrayList<>(posts.values());
+		return posts.values().stream()
+				.sorted(Comparator.comparing(Post::getId).reversed())
+				.toList();
+	}
+	public List<Post> findPage(int page, int size) {
+		long offset = (page - 1L) * size;
+
+		return findAll().stream()
+				.skip(offset)
+				.limit(size)
+				.toList();
 	}
 
 	public Post findById(Long id) {

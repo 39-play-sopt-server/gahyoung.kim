@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -50,12 +51,15 @@ public class PostController {
 	// 게시글 목록 조회
 	@Operation(
 			summary = "게시글 목록 조회",
-			description = "게시글 목록을 조회한다."
+			description = "게시글 목록을 조회한다. 최신순으로 조회되며 페이지로 나뉘어져있다."
 	)
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<Post>>> showPostList() {
+	public ResponseEntity<ApiResponse<List<Post>>> showPostList(
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size
+	) {
 		return ApiResponse.success(
-				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",service.getAllPosts()
+				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",service.getAllPosts(page,size)
 		);
 	}
 
