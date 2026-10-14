@@ -1,6 +1,5 @@
 package org.sopt.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import org.sopt.domain.Post;
 import org.sopt.domain.PostCategory;
@@ -22,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/posts")
-public class PostController {
+public class PostController implements PostApi {
 
 	private final PostService service;
 
@@ -31,10 +30,7 @@ public class PostController {
 	}
 
 	// 게시글 작성
-	@Operation(
-			summary = "게시글 작성",
-			description = "카테고리와 제목과 내용을 필수로 작성해주세요."
-	)
+	@Override
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createPost(
 			@RequestBody CreatePostRequest request
@@ -51,10 +47,7 @@ public class PostController {
 	}
 
 	// 게시글 목록 조회
-	@Operation(
-			summary = "게시글 목록 조회",
-			description = "게시글 목록을 조회한다. 최신순으로 조회되며 페이지로 나뉘어져있다."
-	)
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<Post>>> showPostList(
 			@RequestParam(name = "page", defaultValue = "1") int page,
@@ -67,10 +60,7 @@ public class PostController {
 	}
 
 	// 게시글 상세 조회
-	@Operation(
-			summary = "게시글 상세 조회",
-			description = "게시글을 조회하고 조회수를 1 증가시킵니다."
-	)
+	@Override
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<Post>> showPost(@PathVariable Long id, HttpSession session) {
 		return ApiResponse.success(
@@ -79,10 +69,7 @@ public class PostController {
 	}
 
 	// 게시글 수정
-	@Operation(
-			summary = "게시글 수정",
-			description = "게시글의 제목 혹은 내용을 수정할 수 있다."
-	)
+	@Override
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> updatePost(
 			@PathVariable Long id, @RequestBody UpdatePostRequest request
@@ -99,10 +86,7 @@ public class PostController {
 	}
 
 	// 게시글 삭제
-	@Operation(
-			summary = "게시글 삭제",
-			description = "게시글을 삭제할 수 있다."
-	)
+	@Override
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long id) {
 		service.deletePost(id);
