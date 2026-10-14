@@ -1,4 +1,4 @@
-package org.sopt.exception;
+package org.sopt.global.exception;
 
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;

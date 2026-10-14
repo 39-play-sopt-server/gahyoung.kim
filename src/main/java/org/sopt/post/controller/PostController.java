@@ -1,10 +1,13 @@
-package org.sopt.controller;
+package org.sopt.post.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.sopt.domain.Post;
-import org.sopt.domain.PostCategory;
+import jakarta.validation.Valid;
 import org.sopt.global.response.ApiResponse;
-import org.sopt.service.PostService;
+import org.sopt.post.dto.response.PostResponse;
+import org.sopt.post.domain.PostCategory;
+import org.sopt.post.dto.request.CreatePostRequest;
+import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +36,7 @@ public class PostController implements PostApi {
 	@Override
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createPost(
-			@RequestBody CreatePostRequest request
+			@Valid @RequestBody CreatePostRequest request
 	) {
 		service.createPost(
 				request.category(),
@@ -49,22 +52,25 @@ public class PostController implements PostApi {
 	// 게시글 목록 조회
 	@Override
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<Post>>> showPostList(
+	public ResponseEntity<ApiResponse<List<PostResponse>>> showPostList(
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size,
 			@RequestParam(name = "category", required = false ) PostCategory category
 	) {
 		return ApiResponse.success(
-				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",service.getAllPosts(page,size,category)
+				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",
+				service.getAllPosts(page, size, category).stream()
+						.map(PostResponse::from)
+						.toList()
 		);
 	}
 
 	// 게시글 상세 조회
 	@Override
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<Post>> showPost(@PathVariable Long id, HttpSession session) {
+	public ResponseEntity<ApiResponse<PostResponse>> showPost(@PathVariable Long id, HttpSession session) {
 		return ApiResponse.success(
-				HttpStatus.OK, "게시글 조회에 성공했습니다.", service.getPost(id, session)
+				HttpStatus.OK, "게시글 조회에 성공했습니다.", PostResponse.from(service.getPost(id, session))
 		);
 	}
 
@@ -72,7 +78,7 @@ public class PostController implements PostApi {
 	@Override
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> updatePost(
-			@PathVariable Long id, @RequestBody UpdatePostRequest request
+			@PathVariable Long id, @Valid @RequestBody UpdatePostRequest request
 	) {
 		service.updatePost(
 				id,
@@ -96,14 +102,4 @@ public class PostController implements PostApi {
 		);
 	}
 
-	public record CreatePostRequest(
-			String category,
-			String title,
-			String content
-	) {}
-
-	public record UpdatePostRequest(
-			String title,
-			String content
-	) {}
 }

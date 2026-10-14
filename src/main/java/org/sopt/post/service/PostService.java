@@ -1,12 +1,12 @@
-package org.sopt.service;
+package org.sopt.post.service;
 
 import jakarta.servlet.http.HttpSession;
-import org.sopt.domain.PostCategory;
-import org.sopt.domain.Post;
-import org.sopt.exception.PostException;
-import org.sopt.repository.PostRepository;
+import org.sopt.post.domain.PostCategory;
+import org.sopt.post.domain.Post;
+import org.sopt.global.exception.PostException;
+import org.sopt.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
-import org.sopt.exception.ErrorType;
+import org.sopt.global.exception.ErrorType;
 
 
 import java.util.List;
