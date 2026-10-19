@@ -1,13 +1,13 @@
 package org.sopt.post.service;
 
 import jakarta.servlet.http.HttpSession;
-import org.sopt.post.domain.PostCategory;
-import org.sopt.post.domain.Post;
+import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
+import org.sopt.post.domain.Post;
+import org.sopt.post.domain.PostCategory;
 import org.sopt.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
-import org.sopt.global.exception.ErrorType;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -53,44 +53,44 @@ public class PostService {
 			throw new PostException(ErrorType.INVALID_REQUEST);
 		}
 
-		return repository.findPage(page, size, category );
+		return repository.findAll();
 	}
 
+	@Transactional
 	public Post getPost(Long id, HttpSession session) {
-		synchronized (repository) {
-			validatePostId(id);
-			Post post = repository.findById(id);
+		Post post = repository.findById(id)
+				.orElseThrow(() ->
+						new PostException(ErrorType.POST_NOT_FOUND)
+				);
 
-			String view = "viewedAt:" + id;
-			Long lastViewedAt = (Long) session.getAttribute(view);
-			long now = System.currentTimeMillis();
+		String view = "viewedAt:" + id;
+		Long lastViewedAt = (Long) session.getAttribute(view);
+		long now = System.currentTimeMillis();
 
-			if (lastViewedAt == null || now - lastViewedAt >= VIEW_INTERVAL) {
-				post.increaseViewCount();
-				session.setAttribute(view, now);
-			}
-
-			return post.copy();
+		if (lastViewedAt == null || now - lastViewedAt >= VIEW_INTERVAL) {
+			post.increaseViewCount();
+			session.setAttribute(view, now);
 		}
+
+		return post;
 	}
 
-
+	@Transactional
 	public void updatePost(Long id, String newTitle, String newContent) {
-		synchronized (repository) {
-			validatePostId(id);
-
-
-			if (newTitle == null || newTitle.isBlank()) {
-				throw new PostException(ErrorType.INVALID_TITLE);
-			}
-
-			if (newContent == null || newContent.isBlank()) {
-				throw new PostException(ErrorType.INVALID_CONTENT);
-			}
-
-			Post post = repository.findById(id);
-			post.update(newTitle, newContent);
+		if (newTitle == null || newTitle.isBlank()) {
+			throw new PostException(ErrorType.INVALID_TITLE);
 		}
+
+		if (newContent == null || newContent.isBlank()) {
+			throw new PostException(ErrorType.INVALID_CONTENT);
+		}
+
+		Post post = repository.findById(id)
+				.orElseThrow(() ->
+						new PostException(ErrorType.POST_NOT_FOUND)
+				);
+
+		post.update(newTitle, newContent);
 	}
 
 
