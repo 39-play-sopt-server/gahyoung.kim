@@ -1,6 +1,6 @@
 package org.sopt.global.response;
 
-import org.sopt.exception.ErrorType;
+import org.sopt.global.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

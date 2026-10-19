@@ -1,11 +1,12 @@
-package org.sopt.service;
+package org.sopt.post.service;
 
-import org.sopt.domain.PostCategory;
-import org.sopt.domain.Post;
-import org.sopt.exception.PostException;
-import org.sopt.repository.PostRepository;
+import jakarta.servlet.http.HttpSession;
+import org.sopt.post.domain.PostCategory;
+import org.sopt.post.domain.Post;
+import org.sopt.global.exception.PostException;
+import org.sopt.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
-import org.sopt.exception.ErrorType;
+import org.sopt.global.exception.ErrorType;
 
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class PostService {
 	public PostService(PostRepository repository) {
 		this.repository = repository;
 	}
+
+	// 무한 새로고침 방지를 위한 10분 내에 조회수 연속으로 못올리게 방지
+	private static final long VIEW_INTERVAL = 10 * 60 * 1000L;
 
 	public void createPost(String category, String title, String content) {
 
@@ -44,35 +48,57 @@ public class PostService {
 		repository.save(post);
 	}
 
-	public List<Post> getAllPosts() {
-		return repository.findAll();
+	public List<Post> getAllPosts(int page, int size, PostCategory category) {
+		if (page < 1 || size < 1) {
+			throw new PostException(ErrorType.INVALID_REQUEST);
+		}
+
+		return repository.findPage(page, size, category );
 	}
 
-	public Post getPost(Long id) {
-		validatePostId(id);
-		return repository.findById(id);
+	public Post getPost(Long id, HttpSession session) {
+		synchronized (repository) {
+			validatePostId(id);
+			Post post = repository.findById(id);
+
+			String view = "viewedAt:" + id;
+			Long lastViewedAt = (Long) session.getAttribute(view);
+			long now = System.currentTimeMillis();
+
+			if (lastViewedAt == null || now - lastViewedAt >= VIEW_INTERVAL) {
+				post.increaseViewCount();
+				session.setAttribute(view, now);
+			}
+
+			return post.copy();
+		}
 	}
 
 
 	public void updatePost(Long id, String newTitle, String newContent) {
-		validatePostId(id);
+		synchronized (repository) {
+			validatePostId(id);
 
-		if (newTitle == null || newTitle.isBlank()) {
-			throw new PostException(ErrorType.INVALID_TITLE);
-		}
 
-		if (newContent == null || newContent.isBlank()) {
+			if (newTitle == null || newTitle.isBlank()) {
+				throw new PostException(ErrorType.INVALID_TITLE);
+			}
+
+			if (newContent == null || newContent.isBlank()) {
 				throw new PostException(ErrorType.INVALID_CONTENT);
-		}
+			}
 
 			Post post = repository.findById(id);
 			post.update(newTitle, newContent);
 		}
+	}
 
 
 	public void deletePost(Long id) {
-		validatePostId(id);
-		repository.deleteById(id);
+		synchronized (repository) {
+			validatePostId(id);
+			repository.deleteById(id);
+		}
 	}
 
 	private void validatePostId(Long id) {
@@ -80,4 +106,5 @@ public class PostService {
 			throw new PostException(ErrorType.POST_NOT_FOUND);
 		}
 	}
+
 }
