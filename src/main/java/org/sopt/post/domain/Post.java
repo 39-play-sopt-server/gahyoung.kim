@@ -1,20 +1,29 @@
 package org.sopt.post.domain;
 
-import java.util.concurrent.atomic.AtomicLong;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Post {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	private Long id;
 	private PostCategory category;
 	private String title;
 	private String content;
 
-	// AtomicLong은 동시성을  잡아주는 정수타입
-	private final AtomicLong viewCount = new AtomicLong(0L);
-
+	private long viewCount = 0L;
 	public Post(PostCategory category, String title, String content) {
 		this.category = category;
 		this.title = title;
 		this.content = content;
+	}
+
+	protected  Post() {
+
 	}
 
 	public String getTitle(){
@@ -42,21 +51,19 @@ public class Post {
 		return id;
 	}
 
-	// AtomicLong으로 선언시 .get(); 사용 = > 객체 자체를 반환하면 외부에서 조회수를 직접 변경할 수 있음
-
 	public long getViewCount() {
-		return viewCount.get();
+		return viewCount;
 	}
-	
+
 	public void increaseViewCount() {
-		viewCount.incrementAndGet();
+		viewCount++;
 	}
 
 	// 동시성 제어를 위한 복사
 	public Post copy() {
 		Post copiedPost = new Post(category, title, content);
 		copiedPost.id = id;
-		copiedPost.viewCount.set(viewCount.get());
+		copiedPost.viewCount = viewCount;
 		return copiedPost;
 	}
 }
