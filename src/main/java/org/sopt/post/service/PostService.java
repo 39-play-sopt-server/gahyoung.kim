@@ -44,7 +44,7 @@ public class PostService {
 		} catch (IllegalArgumentException e) {
 			throw new PostException(ErrorType.INVALID_CATEGORY);
 		}
-		Post post = new Post(postCategory, title, content);
+		Post post = new Post(postCategory, title, content, member);
 		repository.save(post);
 	}
 
