@@ -3,15 +3,19 @@ package org.sopt.post.service;
 import jakarta.servlet.http.HttpSession;
 import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
+import org.sopt.global.request.BasePageRequest;
+import org.sopt.global.response.PageResponse;
 import org.sopt.member.domain.Member;
 import org.sopt.member.repository.MemberRepository;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
+import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class PostService {
@@ -56,12 +60,23 @@ public class PostService {
 		repository.save(post);
 	}
 
-	public List<Post> getAllPosts(int page, int size, PostCategory category) {
-		if (page < 1 || size < 1) {
-			throw new PostException(ErrorType.INVALID_REQUEST);
-		}
+	// 페이지네이션 적용
+	@Transactional(readOnly = true)
+	public PageResponse<PostResponse> getAllPosts(BasePageRequest request, PostCategory category) {
+		Sort sort = Sort.by(
+				Sort.Order.desc("createdAt"),
+				Sort.Order.desc("id")
+		);
 
-		return repository.findAll();
+		Pageable pageable = request.toPageable(sort);
+
+		Page<Post> posts = category == null
+				? repository.findAll(pageable)
+				: repository.findAllByCategory(category, pageable);
+
+		Page<PostResponse> responses = posts.map(PostResponse::from);
+
+		return PageResponse.from(responses);
 	}
 
 	@Transactional
