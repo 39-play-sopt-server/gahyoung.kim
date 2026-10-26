@@ -3,6 +3,8 @@ package org.sopt.post.service;
 import jakarta.servlet.http.HttpSession;
 import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
+import org.sopt.member.domain.Member;
+import org.sopt.member.repository.MemberRepository;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
 import org.sopt.post.repository.PostRepository;
@@ -14,15 +16,17 @@ import java.util.List;
 @Service
 public class PostService {
 	private final PostRepository repository ;
+	private final MemberRepository memberRepository;
 
-	public PostService(PostRepository repository) {
+	public PostService(PostRepository repository, MemberRepository memberRepository) {
 		this.repository = repository;
+		this.memberRepository = memberRepository;
 	}
 
 	// 무한 새로고침 방지를 위한 10분 내에 조회수 연속으로 못올리게 방지
 	private static final long VIEW_INTERVAL = 10 * 60 * 1000L;
 
-	public void createPost(String category, String title, String content) {
+	public void createPost(String category, String title, String content,Long memberId) {
 
 	 // if (category.isBlank() || category == null )
 		// 이렇게 쓰면 null이 isBlank()를 호출하는 오류를 막을 수 없음
@@ -44,6 +48,10 @@ public class PostService {
 		} catch (IllegalArgumentException e) {
 			throw new PostException(ErrorType.INVALID_CATEGORY);
 		}
+
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() ->  new PostException(ErrorType.MEMBER_NOT_FOUND));
+
 		Post post = new Post(postCategory, title, content, member);
 		repository.save(post);
 	}

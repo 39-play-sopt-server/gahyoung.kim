@@ -41,7 +41,8 @@ public class PostController implements PostApi {
 		service.createPost(
 				request.category(),
 				request.title(),
-				request.content()
+				request.content(),
+				request.memberId()
 		);
 
 		return ApiResponse.success(

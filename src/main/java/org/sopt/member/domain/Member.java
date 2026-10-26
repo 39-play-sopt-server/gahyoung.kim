@@ -1,4 +1,4 @@
-package org.sopt.post.domain;
+package org.sopt.member.domain;
 
 
 import jakarta.persistence.Column;

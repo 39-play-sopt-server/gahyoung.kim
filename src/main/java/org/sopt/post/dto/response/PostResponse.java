@@ -8,7 +8,8 @@ public record PostResponse(
 		PostCategory category,
 		String title,
 		String content,
-		long viewCount
+		long viewCount,
+		String author
 ) {
 	public static PostResponse from(Post post) {
 		return new PostResponse(
@@ -16,7 +17,8 @@ public record PostResponse(
 				post.getCategory(),
 				post.getTitle(),
 				post.getContent(),
-				post.getViewCount()
+				post.getViewCount(),
+				post.getMember().getName()
 		);
 	}
 }

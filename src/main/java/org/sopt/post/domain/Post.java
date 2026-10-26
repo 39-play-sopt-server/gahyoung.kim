@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import org.sopt.global.domain.BaseEntity;
+import org.sopt.member.domain.Member;
 
 @Entity
 public class Post extends BaseEntity {
@@ -27,6 +28,7 @@ public class Post extends BaseEntity {
 		this.category = category;
 		this.title = title;
 		this.content = content;
+		this.member = member;
 	}
 
 	protected  Post() {
