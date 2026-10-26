@@ -35,9 +35,9 @@ public class MemberController {
 		);
 	}
 
-	@DeleteMapping("/memberId")
+	@DeleteMapping("/{memberId}")
 	public ResponseEntity<ApiResponse<Void>> deleteMember(
-			@PathVariable("memberID") Long memberId
+			@PathVariable("memberId") Long memberId
 	) {
 		memberService.deleteMember(memberId);
 
