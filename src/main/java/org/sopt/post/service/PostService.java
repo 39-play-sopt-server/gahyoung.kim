@@ -53,7 +53,7 @@ public class PostService {
 			throw new PostException(ErrorType.INVALID_CATEGORY);
 		}
 
-		Member member = memberRepository.findById(memberId)
+		Member member = memberRepository.findByIdAndDeletedAtIsNull(memberId)
 				.orElseThrow(() ->  new PostException(ErrorType.MEMBER_NOT_FOUND));
 
 		Post post = new Post(postCategory, title, content, member);

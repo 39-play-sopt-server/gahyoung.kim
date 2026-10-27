@@ -28,7 +28,7 @@ public class MemberService {
 
 	@Transactional
 	public void deleteMember(Long memberId) {
-		Member member = memberRepository.findById(memberId)
+		Member member = memberRepository.findByIdAndDeletedAtIsNull(memberId)
 				.orElseThrow(() -> new PostException(ErrorType.MEMBER_NOT_FOUND)
 				);
 
@@ -36,6 +36,6 @@ public class MemberService {
 			throw new PostException(ErrorType.WITH_POST_MEMBER);
 		}
 
-		memberRepository.delete(member);
+		member.onDelete();
 	}
 }
