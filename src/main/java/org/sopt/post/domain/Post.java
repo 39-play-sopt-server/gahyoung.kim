@@ -1,5 +1,6 @@
 package org.sopt.post.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,10 +15,15 @@ import org.sopt.member.domain.Member;
 public class Post extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
+	@Column(name = "post_id")
 	private Long id;
+	@Column(nullable = false)
 	private PostCategory category;
+
+	@Column(nullable = false)
 	private String title;
+
+	@Column(nullable = false)
 	private String content;
 	private long viewCount = 0L;
 	@ManyToOne(fetch = FetchType.LAZY)
