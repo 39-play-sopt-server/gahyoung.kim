@@ -2,16 +2,19 @@ package org.sopt.post.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.sopt.global.request.BasePageRequest;
 import org.sopt.global.response.ApiResponse;
-import org.sopt.post.dto.response.PostResponse;
+import org.sopt.global.response.PageResponse;
 import org.sopt.post.domain.PostCategory;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/posts")
@@ -41,7 +42,8 @@ public class PostController implements PostApi {
 		service.createPost(
 				request.category(),
 				request.title(),
-				request.content()
+				request.content(),
+				request.memberId()
 		);
 
 		return ApiResponse.success(
@@ -52,18 +54,16 @@ public class PostController implements PostApi {
 	// 게시글 목록 조회
 	@Override
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<PostResponse>>> showPostList(
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size,
-			@RequestParam(name = "category", required = false ) PostCategory category
+	public ResponseEntity<ApiResponse<PageResponse<PostResponse>>> showPostList(
+			@Valid @ModelAttribute BasePageRequest request,
+			@RequestParam(name = "category", required = false) PostCategory category
 	) {
 		return ApiResponse.success(
 				HttpStatus.OK, "게시글 목록 조회에 성공했습니다.",
-				service.getAllPosts(page, size, category).stream()
-						.map(PostResponse::from)
-						.toList()
+				service.getAllPosts(request,category)
 		);
 	}
+
 
 	// 게시글 상세 조회
 	@Override

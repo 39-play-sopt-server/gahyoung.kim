@@ -3,14 +3,14 @@ package org.sopt.post.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import org.sopt.global.request.BasePageRequest;
 import org.sopt.global.response.ApiResponse;
-import org.sopt.post.dto.response.PostResponse;
+import org.sopt.global.response.PageResponse;
 import org.sopt.post.domain.PostCategory;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.dto.response.PostResponse;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 @Tag(name = "게시글", description = "게시글 API")
 public interface PostApi {
@@ -27,9 +27,8 @@ public interface PostApi {
 			summary = "게시글 목록 조회",
 			description = "게시글 목록을 조회한다. 최신순으로 조회되며 페이지로 나뉘어져있다."
 	)
-	ResponseEntity<ApiResponse<List<PostResponse>>> showPostList(
-			int page,
-			int size,
+	ResponseEntity<ApiResponse<PageResponse<PostResponse>>> showPostList(
+			BasePageRequest request,
 			PostCategory category
 	);
 
