@@ -3,9 +3,9 @@ spring:
     name: assignment
 
   datasource:
-    url: jdbc:mysql://localhost:3306/assignment
-    username: root
-    password: "050920"
+    url: jdbc:mysql://assignment.chumu2c2i5z5.ap-southeast-2.rds.amazonaws.com:3306/assignment
+    username: gykim
+    password: ${DB_PASSWORD:30923138}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
