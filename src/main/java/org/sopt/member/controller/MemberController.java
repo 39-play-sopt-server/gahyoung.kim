@@ -6,7 +6,9 @@ import org.sopt.member.dto.CreateMemberRequest;
 import org.sopt.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +44,10 @@ public class MemberController {
 		memberService.deleteMember(memberId);
 
 		return ApiResponse.success(HttpStatus.OK,"회원이 삭제되었습니다.",null);
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<Long> me(@AuthenticationPrincipal Long memberId) {
+		return ResponseEntity.ok(memberId);
 	}
 }

@@ -7,4 +7,8 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByIdAndDeletedAtIsNull(Long id);
+
+	Optional<Member> findByEmail(String email);
+
+	boolean existsByEmail(String email);
 }
