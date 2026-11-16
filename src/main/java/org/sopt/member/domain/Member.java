@@ -20,7 +20,18 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false, unique = true)
+	private String email;
+
+	@Column(nullable = false)
+	private String password;
+
+
 	protected Member() {
+	}
+	public Member(String email, String password) {
+		this.email = email;
+		this.password = password;
 	}
 
 	public Member(String name) {
@@ -33,5 +44,9 @@ public class Member extends BaseEntity {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 }
