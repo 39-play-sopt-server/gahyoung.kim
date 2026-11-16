@@ -5,16 +5,13 @@ import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
 import org.sopt.member.domain.Member;
 import org.sopt.member.repository.MemberRepository;
-import org.sopt.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-	private final PostRepository postRepository;
 	private final MemberRepository memberRepository;
 
-	public MemberService(PostRepository postRepository, MemberRepository memberRepository) {
-		this.postRepository = postRepository;
+	public MemberService(MemberRepository memberRepository) {
 		this.memberRepository = memberRepository;
 	}
 
@@ -31,11 +28,6 @@ public class MemberService {
 		Member member = memberRepository.findByIdAndDeletedAtIsNull(memberId)
 				.orElseThrow(() -> new PostException(ErrorType.MEMBER_NOT_FOUND)
 				);
-
-		if (postRepository.existsByMember_Id(memberId)) {
-			throw new PostException(ErrorType.WITH_POST_MEMBER);
-		}
-
 		member.onDelete();
 	}
 }
