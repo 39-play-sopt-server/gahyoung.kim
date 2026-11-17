@@ -1,5 +1,6 @@
 package org.sopt.auth.contoller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.sopt.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +24,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-		String accessToken = authService.login(request.email(), request.password());
+	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response
+	) {
+		String accessToken = authService.login(request.email(), request.password(),response);
 		return ResponseEntity.ok(new LoginResponse(accessToken));
 	}
 }
