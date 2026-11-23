@@ -14,8 +14,10 @@ import org.sopt.post.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PostService {
@@ -99,7 +101,7 @@ public class PostService {
 	}
 
 	@Transactional
-	public void updatePost(Long id, String newTitle, String newContent) {
+	public void updatePost(Long id, String newTitle, String newContent, Long memberId) {
 		if (newTitle == null || newTitle.isBlank()) {
 			throw new PostException(ErrorType.INVALID_TITLE);
 		}
@@ -113,15 +115,24 @@ public class PostService {
 						new PostException(ErrorType.POST_NOT_FOUND)
 				);
 
+		if (!post.getMember().getId().equals(memberId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+
 		post.update(newTitle, newContent);
 	}
 
 
-	public void deletePost(Long id) {
-		synchronized (repository) {
-			validatePostId(id);
-			repository.deleteById(id);
+	@Transactional
+	public void deletePost(Long id, Long memberId) {
+		Post post = repository.findById(id)
+				.orElseThrow(() -> new PostException(ErrorType.POST_NOT_FOUND));
+
+		if (!post.getMember().getId().equals(memberId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 		}
+
+		repository.delete(post);
 	}
 
 	private void validatePostId(Long id) {

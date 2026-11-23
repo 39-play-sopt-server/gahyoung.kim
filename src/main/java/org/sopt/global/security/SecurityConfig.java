@@ -38,13 +38,18 @@ public class SecurityConfig {
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				// URL별 접근 권한 설정
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login", "/auth/reissue").permitAll()						.anyRequest().authenticated())
+						.requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login", "/auth/reissue").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/member").denyAll()
+						.anyRequest().authenticated())
 				// 인증 실패 시 401 응답
 				.exceptionHandling(e -> e
 						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				// JWT 인증 필터 추가
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider, memberRepository),
 						UsernamePasswordAuthenticationFilter.class)
+
+
+
 				.build();
 	}
 
