@@ -41,4 +41,5 @@ public class RefreshTokenService {
 	private String createRefreshTokenKey(Long memberId) {
 		return REFRESH_TOKEN_KEY_PREFIX + memberId;
 	}
+	private final RefreshTokenService refreshTokenService;
 }

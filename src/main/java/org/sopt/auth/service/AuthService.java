@@ -35,7 +35,7 @@ public class AuthService {
 	@Transactional(readOnly = true)
 	public AuthTokens login(String email, String password) {
 		{
-			Member member = memberRepository.findByEmail(email)
+			Member member = memberRepository.findByEmailAndDeletedAtIsNull(email)
 					.orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
 			if (!passwordEncoder.matches(password, member.getPassword())) {
@@ -62,6 +62,9 @@ public class AuthService {
 
 		if (!refreshTokenService.matches(memberId, refreshToken)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token입니다.");
+		}
+		if (memberRepository.findByIdAndDeletedAtIsNull(memberId).isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}
 
 		return jwtProvider.createAccessToken(memberId);

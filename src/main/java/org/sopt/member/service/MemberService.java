@@ -1,6 +1,7 @@
 package org.sopt.member.service;
 
 import jakarta.transaction.Transactional;
+import org.sopt.auth.service.RefreshTokenService;
 import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
 import org.sopt.member.domain.Member;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final RefreshTokenService refreshTokenService;
 
-	public MemberService(MemberRepository memberRepository) {
+	public MemberService(MemberRepository memberRepository, RefreshTokenService refreshTokenService) {
 		this.memberRepository = memberRepository;
+		this.refreshTokenService = refreshTokenService;
 	}
 
 	@Transactional
@@ -29,5 +32,6 @@ public class MemberService {
 				.orElseThrow(() -> new PostException(ErrorType.MEMBER_NOT_FOUND)
 				);
 		member.onDelete();
+		refreshTokenService.delete(memberId);
 	}
 }
