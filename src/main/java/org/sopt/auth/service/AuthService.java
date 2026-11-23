@@ -48,6 +48,9 @@ public class AuthService {
 			return new AuthTokens(accessToken, refreshToken);
 		}
 	}
+	public void logout(Long memberId) {
+		refreshTokenService.delete(memberId);
+	}
 
 	public String reissueTokens(String refreshToken) {
 		Long memberId;
