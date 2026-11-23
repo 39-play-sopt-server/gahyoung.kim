@@ -47,6 +47,7 @@ public class GlobalExceptionHandler {
 		}
 
 		// 나머진 서버오류
+		e.printStackTrace();
 		return ApiResponse.error(
 				ErrorType.INTERNAL_SERVER_ERROR,
 				ErrorType.INTERNAL_SERVER_ERROR.getMessage()
