@@ -5,8 +5,11 @@ import org.sopt.auth.service.RefreshTokenService;
 import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
 import org.sopt.member.domain.Member;
+import org.sopt.member.dto.MemberList;
 import org.sopt.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MemberService {
@@ -33,5 +36,12 @@ public class MemberService {
 				);
 		member.onDelete();
 		refreshTokenService.delete(memberId);
+	}
+
+	public List<MemberList> getMembers() {
+		return memberRepository.findAllByDeletedAtIsNull().stream()
+				.map(member -> new MemberList(
+						member.getId(), member.getName(), member.getRole()))
+				.toList();
 	}
 }

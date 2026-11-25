@@ -3,6 +3,7 @@ package org.sopt.member.controller;
 import jakarta.validation.Valid;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.member.dto.CreateMemberRequest;
+import org.sopt.member.dto.MemberList;
 import org.sopt.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/v1")
 public class MemberController {
 
 	private final MemberService memberService;
@@ -25,7 +28,7 @@ public class MemberController {
 
 	}
 
-	@PostMapping
+	@PostMapping("/member")
 	public ResponseEntity<ApiResponse<Long>> createMember(
 			@Valid @RequestBody CreateMemberRequest request
 			) {
@@ -36,7 +39,7 @@ public class MemberController {
 		);
 	}
 
-	@DeleteMapping("/me")
+	@DeleteMapping("/member/me")
 	public ResponseEntity<ApiResponse<Void>> deleteMember(
 			@AuthenticationPrincipal Long memberId	) {
 		memberService.deleteMember(memberId);
@@ -44,8 +47,13 @@ public class MemberController {
 		return ApiResponse.success(HttpStatus.OK,"회원이 탈퇴되었습니다.",null);
 	}
 
-	@GetMapping("/me")
+	@GetMapping("/member/me")
 	public ResponseEntity<Long> me(@AuthenticationPrincipal Long memberId) {
 		return ResponseEntity.ok(memberId);
+	}
+	@GetMapping("/members")
+	public ResponseEntity<ApiResponse<List<MemberList>>> getMembers() {
+		return ApiResponse.success(
+				HttpStatus.OK, "회원 목록을 조회했습니다.", memberService.getMembers());
 	}
 }
