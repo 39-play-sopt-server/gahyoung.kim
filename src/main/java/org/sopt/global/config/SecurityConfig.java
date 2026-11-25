@@ -1,5 +1,7 @@
-package org.sopt.global.security;
+package org.sopt.global.config;
 
+import org.sopt.global.security.JwtAuthenticationFilter;
+import org.sopt.global.security.JwtProvider;
 import org.sopt.member.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

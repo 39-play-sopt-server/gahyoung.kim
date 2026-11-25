@@ -42,13 +42,9 @@ public class JwtProvider {
 		JwtBuilder builder = Jwts.builder()
 				.subject(String.valueOf(memberId))
 				.claim("tokenType", tokenType)
+				.id(UUID.randomUUID().toString())
 				.issuedAt(now)
 				.expiration(new Date(now.getTime() + expirationMillis));
-
-		if ("REFRESH".equals(tokenType)) {
-			builder.id(UUID.randomUUID().toString());
-		}
-
 		return builder.signWith(secretKey).compact();
 	}
 	public Long getMemberId(String token) {
@@ -58,5 +54,4 @@ public class JwtProvider {
 	public Long getMemberIdFromRefreshToken(String token) {
 		return tokenParser.getMemberId(token, "REFRESH");
 	}
-
 }
