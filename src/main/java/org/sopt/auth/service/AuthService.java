@@ -1,7 +1,9 @@
 package org.sopt.auth.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.sopt.auth.domain.AccessTokenBlacklist;
 import org.sopt.auth.service.vo.AuthTokens;
 import org.sopt.global.security.JwtProvider;
 import org.sopt.member.domain.Member;
@@ -20,6 +22,7 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final RefreshTokenService refreshTokenService;
+	private final AccessTokenBlacklist accessTokenBlacklist;
 
 
 	@Transactional
@@ -48,10 +51,11 @@ public class AuthService {
 			return new AuthTokens(accessToken, refreshToken);
 		}
 	}
-	public void logout(Long memberId) {
+	public void logout(Long memberId, String accessToken) {
+		Claims claims = jwtProvider.parseAccessToken(accessToken);
+		accessTokenBlacklist.add(claims.getId(), claims.getExpiration().toInstant());
 		refreshTokenService.delete(memberId);
 	}
-
 	public String reissueTokens(String refreshToken) {
 		Long memberId;
 		try {

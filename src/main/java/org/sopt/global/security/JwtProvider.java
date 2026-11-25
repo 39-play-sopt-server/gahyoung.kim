@@ -1,5 +1,6 @@
 package org.sopt.global.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -53,5 +54,9 @@ public class JwtProvider {
 
 	public Long getMemberIdFromRefreshToken(String token) {
 		return tokenParser.getMemberId(token, "REFRESH");
+	}
+
+	public Claims parseAccessToken(String token) {
+		return tokenParser.parseAccessToken(token);
 	}
 }

@@ -1,5 +1,6 @@
 package org.sopt.global.config;
 
+import org.sopt.auth.domain.AccessTokenBlacklist;
 import org.sopt.global.security.JwtAuthenticationFilter;
 import org.sopt.global.security.JwtProvider;
 import org.sopt.member.repository.MemberRepository;
@@ -28,8 +29,11 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http, MemberRepository memberRepository)
-			throws Exception {		return http
+	public SecurityFilterChain filterChain(
+			HttpSecurity http,
+			MemberRepository memberRepository,
+			AccessTokenBlacklist accessTokenBlacklist
+	) throws Exception {	return http
 				// CSRF 비활성화, Authorization 헤더로 보내면 CSRF의 전제 조건이 없기 때문
 				.csrf(AbstractHttpConfigurer::disable)
 				// 폼 로그인, HTTP Basic 비활성화
@@ -49,8 +53,10 @@ public class SecurityConfig {
 				.exceptionHandling(e -> e
 						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				// JWT 인증 필터 추가
-				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider, memberRepository),
-						UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(
+						new JwtAuthenticationFilter(jwtProvider, memberRepository, accessTokenBlacklist),
+						UsernamePasswordAuthenticationFilter.class
+				)
 				.build();
 	}
 
