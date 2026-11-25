@@ -3,6 +3,8 @@ package org.sopt.member.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,6 +41,10 @@ public class Member extends BaseEntity {
 		this.name = name;
 	}
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, columnDefinition = "varchar(20) default 'ROLE_USER'")
+	private MemberRole role = MemberRole.ROLE_USER;
+
 	public Long getId() {
 		return id;
 	}
@@ -49,5 +55,9 @@ public class Member extends BaseEntity {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public MemberRole getRole() {
+		return role;
 	}
 }

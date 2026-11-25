@@ -40,6 +40,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login", "/auth/reissue").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/v1/member").denyAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/members")
+						.hasAuthority("ROLE_ADMIN")
 						.anyRequest().authenticated())
 				// 인증 실패 시 401 응답
 				.exceptionHandling(e -> e
@@ -47,9 +49,6 @@ public class SecurityConfig {
 				// JWT 인증 필터 추가
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider, memberRepository),
 						UsernamePasswordAuthenticationFilter.class)
-
-
-
 				.build();
 	}
 
