@@ -5,6 +5,7 @@ import org.sopt.global.response.ApiResponse;
 import org.sopt.member.dto.CreateMemberRequest;
 import org.sopt.member.dto.MemberList;
 import org.sopt.member.service.MemberService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,8 +43,10 @@ public class MemberController {
 
 	@DeleteMapping("/member/me")
 	public ResponseEntity<ApiResponse<Void>> deleteMember(
-			@AuthenticationPrincipal Long memberId	) {
-		memberService.deleteMember(memberId);
+			@AuthenticationPrincipal Long memberId,
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+		String accessToken = authorization.substring("Bearer ".length());
+		memberService.deleteMember(memberId, accessToken);
 
 		return ApiResponse.success(HttpStatus.OK,"회원이 탈퇴되었습니다.",null);
 	}

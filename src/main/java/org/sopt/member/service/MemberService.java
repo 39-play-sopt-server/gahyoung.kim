@@ -1,7 +1,7 @@
 package org.sopt.member.service;
 
 import jakarta.transaction.Transactional;
-import org.sopt.auth.service.RefreshTokenService;
+import org.sopt.auth.service.AuthService;
 import org.sopt.global.exception.ErrorType;
 import org.sopt.global.exception.PostException;
 import org.sopt.member.domain.Member;
@@ -14,11 +14,10 @@ import java.util.List;
 @Service
 public class MemberService {
 	private final MemberRepository memberRepository;
-	private final RefreshTokenService refreshTokenService;
-
-	public MemberService(MemberRepository memberRepository, RefreshTokenService refreshTokenService) {
+	private final AuthService authService;
+	public MemberService(MemberRepository memberRepository, AuthService authService) {
 		this.memberRepository = memberRepository;
-		this.refreshTokenService = refreshTokenService;
+		this.authService = authService;
 	}
 
 	@Transactional
@@ -30,13 +29,12 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void deleteMember(Long memberId) {
+	public void deleteMember(Long memberId , String accessToken) {
 		Member member = memberRepository.findByIdAndDeletedAtIsNull(memberId)
 				.orElseThrow(() -> new PostException(ErrorType.MEMBER_NOT_FOUND)
 				);
 		member.onDelete();
-		refreshTokenService.delete(memberId);
-	}
+		authService.logout(memberId, accessToken);	}
 
 	public List<MemberList> getMembers() {
 		return memberRepository.findAllByDeletedAtIsNull().stream()
