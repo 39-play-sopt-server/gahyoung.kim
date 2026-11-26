@@ -18,7 +18,9 @@ public record PostResponse(
 				post.getTitle(),
 				post.getContent(),
 				post.getViewCount(),
-				post.getMember().getName()
+				post.getMember().isDeleted()
+						? "탈퇴한 회원"
+						:post.getMember().getName()
 		);
 	}
 }

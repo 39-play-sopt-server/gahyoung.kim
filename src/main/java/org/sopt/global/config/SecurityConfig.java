@@ -1,7 +1,13 @@
-package org.sopt.global.security;
+package org.sopt.global.config;
 
+import org.sopt.auth.domain.AccessTokenBlacklist;
+import org.sopt.global.security.JwtAuthenticationFilter;
+import org.sopt.global.security.JwtProvider;
+import org.sopt.global.security.oauth.handler.OAuthLoginSuccessHandler;
+import org.sopt.member.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,26 +30,38 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http
+	public SecurityFilterChain filterChain(
+			HttpSecurity http,
+			MemberRepository memberRepository,
+			AccessTokenBlacklist accessTokenBlacklist,
+			OAuthLoginSuccessHandler oauthLoginSuccessHandler
+	) throws Exception {	return http
 				// CSRF 비활성화, Authorization 헤더로 보내면 CSRF의 전제 조건이 없기 때문
 				.csrf(AbstractHttpConfigurer::disable)
 				// 폼 로그인, HTTP Basic 비활성화
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable)
+				.oauth2Login(oauth -> oauth
+						.successHandler(oauthLoginSuccessHandler)
+					.permitAll())
 				// 세션 STATELESS
 				.sessionManagement(session ->
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				// URL별 접근 권한 설정
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/auth/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login", "/auth/reissue").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/member").denyAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/members")
+						.hasAuthority("ROLE_ADMIN")
 						.anyRequest().authenticated())
 				// 인증 실패 시 401 응답
 				.exceptionHandling(e -> e
 						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				// JWT 인증 필터 추가
-				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
-						UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(
+						new JwtAuthenticationFilter(jwtProvider, memberRepository, accessTokenBlacklist),
+						UsernamePasswordAuthenticationFilter.class
+				)
 				.build();
 	}
 

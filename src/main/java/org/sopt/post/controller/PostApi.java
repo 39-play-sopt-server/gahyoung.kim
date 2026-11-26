@@ -20,7 +20,8 @@ public interface PostApi {
 			description = "카테고리와 제목과 내용을 필수로 작성해주세요."
 	)
 	ResponseEntity<ApiResponse<Void>> createPost(
-			CreatePostRequest request
+			CreatePostRequest request,
+			Long memberId
 	);
 
 	@Operation(
@@ -47,12 +48,12 @@ public interface PostApi {
 	)
 	ResponseEntity<ApiResponse<Void>> updatePost(
 			Long id,
-			UpdatePostRequest request
+			UpdatePostRequest request,
+			Long memberId
 	);
 
 	@Operation(
 			summary = "게시글 삭제",
 			description = "게시글을 삭제합니다."
 	)
-	ResponseEntity<ApiResponse<Void>> deletePost(Long id);
-}
+	ResponseEntity<ApiResponse<Void>> deletePost(Long id, Long memberId);}

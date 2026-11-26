@@ -12,6 +12,7 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,13 +38,14 @@ public class PostController implements PostApi {
 	@Override
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createPost(
-			@Valid @RequestBody CreatePostRequest request
+			@Valid @RequestBody CreatePostRequest request,
+			@AuthenticationPrincipal Long memberId
 	) {
 		service.createPost(
 				request.category(),
 				request.title(),
 				request.content(),
-				request.memberId()
+				memberId
 		);
 
 		return ApiResponse.success(
@@ -78,12 +80,14 @@ public class PostController implements PostApi {
 	@Override
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> updatePost(
-			@PathVariable Long id, @Valid @RequestBody UpdatePostRequest request
+			@PathVariable Long id, @Valid @RequestBody UpdatePostRequest request,
+			@AuthenticationPrincipal Long memberId
 	) {
 		service.updatePost(
 				id,
 				request.title(),
-				request.content()
+				request.content(),
+				memberId
 		);
 
 		return ApiResponse.success(
@@ -94,8 +98,9 @@ public class PostController implements PostApi {
 	// 게시글 삭제
 	@Override
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long id) {
-		service.deletePost(id);
+	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long id,
+														@AuthenticationPrincipal Long memberId) {
+		service.deletePost(id, memberId);
 
 		return ApiResponse.success(
 				HttpStatus.OK, "게시글이 삭제되었습니다.",null

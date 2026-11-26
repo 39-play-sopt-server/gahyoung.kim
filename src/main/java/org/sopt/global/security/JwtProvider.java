@@ -1,6 +1,7 @@
 package org.sopt.global.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -9,39 +10,53 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtProvider {
 
 	private final SecretKey secretKey;
 	private final long accessTokenExpiration;
+	private final long refreshTokenExpiration;
+	private final JwtTokenParser tokenParser;
 
 	public JwtProvider(
 			@Value("${jwt.secret}") String secret,
-			@Value("${jwt.access-token-expiration}") long accessTokenExpiration
+			@Value("${jwt.access-token-expiration}") long accessTokenExpiration,
+			@Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration
 	) {
 		this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+		this.tokenParser = new JwtTokenParser(this.secretKey);
 		this.accessTokenExpiration = accessTokenExpiration;
+		this.refreshTokenExpiration = refreshTokenExpiration;
 	}
-
 	public String createAccessToken(Long memberId) {
-		Date now = new Date();
-
-		return Jwts.builder()
-				.subject(String.valueOf(memberId))   // 누구의 토큰인지
-				.issuedAt(now)                       // 발급 시각
-				.expiration(new Date(now.getTime() + accessTokenExpiration)) // 만료 시각
-				.signWith(secretKey)                 // 서명
-				.compact();
+		return createToken(memberId, "ACCESS", accessTokenExpiration);
 	}
 
-	public Long getMemberId(String token) {
-		Claims claims = Jwts.parser()
-				.verifyWith(secretKey)
-				.build()
-				.parseSignedClaims(token)  // 서명, 만료 검증 → 실패 시 JwtException
-				.getPayload();
+	public String createRefreshToken(Long memberId) {
+		return createToken(memberId, "REFRESH", refreshTokenExpiration);
+	}
 
-		return Long.valueOf(claims.getSubject());
+	private String createToken(Long memberId, String tokenType, long expirationMillis) {
+		Date now = new Date();
+		JwtBuilder builder = Jwts.builder()
+				.subject(String.valueOf(memberId))
+				.claim("tokenType", tokenType)
+				.id(UUID.randomUUID().toString())
+				.issuedAt(now)
+				.expiration(new Date(now.getTime() + expirationMillis));
+		return builder.signWith(secretKey).compact();
+	}
+	public Long getMemberId(String token) {
+		return tokenParser.getMemberId(token, "ACCESS");
+	}
+
+	public Long getMemberIdFromRefreshToken(String token) {
+		return tokenParser.getMemberId(token, "REFRESH");
+	}
+
+	public Claims parseAccessToken(String token) {
+		return tokenParser.parseAccessToken(token);
 	}
 }
