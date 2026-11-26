@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.sopt.auth.domain.AccessTokenBlacklist;
 import org.sopt.auth.service.vo.AuthTokens;
 import org.sopt.global.security.JwtProvider;
+import org.sopt.global.security.oauth.SocialMemberMapper;
 import org.sopt.member.domain.Member;
 import org.sopt.member.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,8 @@ public class AuthService {
 	private final JwtProvider jwtProvider;
 	private final RefreshTokenService refreshTokenService;
 	private final AccessTokenBlacklist accessTokenBlacklist;
+	private final List<SocialMemberMapper> socialMemberMappers;
+	private final SocialMemberService socialMemberService;
 
 
 	@Transactional
@@ -37,19 +42,23 @@ public class AuthService {
 
 	@Transactional(readOnly = true)
 	public AuthTokens login(String email, String password) {
-		{
-			Member member = memberRepository.findByEmailAndDeletedAtIsNull(email)
-					.orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+		Member member = memberRepository.findByEmailAndDeletedAtIsNull(email)
+				.orElseThrow(() -> new IllegalArgumentException(
+						"이메일 또는 비밀번호가 올바르지 않습니다."));
 
-			if (!passwordEncoder.matches(password, member.getPassword())) {
-				throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
-			}
-			String accessToken = jwtProvider.createAccessToken(member.getId());
-			String refreshToken = jwtProvider.createRefreshToken(member.getId());
-			refreshTokenService.save(member.getId(), refreshToken);
-
-			return new AuthTokens(accessToken, refreshToken);
+		if (!passwordEncoder.matches(password, member.getPassword())) {
+			throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
 		}
+
+		return issueTokens(member);
+	}
+
+	private AuthTokens issueTokens(Member member) {
+		String accessToken = jwtProvider.createAccessToken(member.getId());
+		String refreshToken = jwtProvider.createRefreshToken(member.getId());
+		refreshTokenService.save(member.getId(), refreshToken);
+
+		return new AuthTokens(accessToken, refreshToken);
 	}
 	public void logout(Long memberId, String accessToken) {
 		Claims claims = jwtProvider.parseAccessToken(accessToken);
