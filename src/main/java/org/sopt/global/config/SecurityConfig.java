@@ -3,6 +3,7 @@ package org.sopt.global.config;
 import org.sopt.auth.domain.AccessTokenBlacklist;
 import org.sopt.global.security.JwtAuthenticationFilter;
 import org.sopt.global.security.JwtProvider;
+import org.sopt.global.security.oauth.handler.OAuthLoginSuccessHandler;
 import org.sopt.member.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,13 +33,17 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(
 			HttpSecurity http,
 			MemberRepository memberRepository,
-			AccessTokenBlacklist accessTokenBlacklist
+			AccessTokenBlacklist accessTokenBlacklist,
+			OAuthLoginSuccessHandler oauthLoginSuccessHandler
 	) throws Exception {	return http
 				// CSRF 비활성화, Authorization 헤더로 보내면 CSRF의 전제 조건이 없기 때문
 				.csrf(AbstractHttpConfigurer::disable)
 				// 폼 로그인, HTTP Basic 비활성화
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable)
+				.oauth2Login(oauth -> oauth
+						.successHandler(oauthLoginSuccessHandler)
+					.permitAll())
 				// 세션 STATELESS
 				.sessionManagement(session ->
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
